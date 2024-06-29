@@ -51,7 +51,6 @@ tweaks = [
     "co.shoyu.miso",
     "ws.hbang.newterm2",
     "com.spark.snowboard",
-    "fuckyou",
     "vim",
 ]
 
@@ -91,11 +90,14 @@ def get_packages(device):
 
             if f"deb {repo} ./" not in installed_packages:
                 f.write(f"deb {repo} ./\n")
-                logger.info(f"Installed package '{repo_name}'.")
+                logger.info(f"Installing package '{repo_name}'.")
             else:
                 logger.warning(f"Package '{repo_name}' is already installed.")
 
     sftp.close()
+
+    logger.info("Updating Packages")
+    device.exec_command("apt update 2>/dev/null")
 
 
 def get_tweaks(device):
@@ -111,7 +113,7 @@ def get_tweaks(device):
             if stderr.channel.recv_exit_status():
                 logger.error(f"Unable to locate tweak: '{tweak}'.")
             else:
-                logger.info(f"Installed tweak '{tweak}'.")
+                logger.info(f"Installing tweak '{tweak}'.")
 
 
 if __name__ == "__main__":
