@@ -55,16 +55,17 @@ tweaks = [
 ]
 
 
-def connect_ssh(hostname):
+def connect_ssh(hostname, username="root"):
     device = paramiko.SSHClient()
     device.set_missing_host_key_policy(paramiko.AutoAddPolicy())
     device.connect(
         hostname,
-        username="root",
+        username=username,
         password=getpass.getpass(
             prompt=f"root@{hostname}'s password (default is 'alpine'): "
         ),
     )
+    logger.info(f"Connected to {username}@{hostname}")
     return device
 
 
@@ -103,19 +104,25 @@ def get_packages(device):
 def get_tweaks(device):
     logger.info("Installing Tweaks")
 
+    def get_tweak_name(tweak):
+        _, stdout, _ = device.exec_command(f"dpkg -s {tweak} | sed -n 's/^Name: //p'")
+        return stdout.read().decode().strip()
+
     for tweak in tweaks:
         _, stdout, _ = device.exec_command(f"dpkg -l | grep -qw {tweak}")
         if not stdout.channel.recv_exit_status():
-            logger.warning(f"Tweak '{tweak}' is already installed.")
+            logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed.")
         else:
             _, stdout, stderr = device.exec_command(
                 f"apt install -y {tweak} --allow-unauthenticated"
             )
             stdout.channel.recv_exit_status()
             if stderr.channel.recv_exit_status():
-                logger.error(f"Unable to locate tweak: '{tweak}'.")
+                logger.error(
+                    f"Unable to locate tweak: '{tweak}'."
+                )  # either invalid/paid tweak or repository not added
             else:
-                logger.info(f"Installing tweak '{tweak}'.")
+                logger.info(f"Installing tweak '{get_tweak_name(tweak)}'.")
 
 
 if __name__ == "__main__":
