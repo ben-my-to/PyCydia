@@ -22,8 +22,9 @@ A Simple Cydia Package+Tweak Installer in Python.
 
 ## How to Install:
   1. Open Cydia and install OpenSSH _(apt.bingner.com)_.
-  2. Clone the repository `git clone https://github.com/ben-my-to/PyCydia.git && cd PyCydia/`.
-  3. Run the python script `python install.py <hostname>`.
+  2. Clone the repository: `git clone https://github.com/ben-my-to/PyCydia.git && cd PyCydia/`.
+  3. Install the requirements: `pip install -r requirements.txt`.
+  4. Run the python script: `python install.py <hostname>`.
      - Your device IP address can be found in: Settings -> Wi-Fi -> (i) -> IP Address.
      - The default password is `alpine`.
      - _(Optional)_ You should change the default password using the command `passwd`.
@@ -33,4 +34,4 @@ A Simple Cydia Package+Tweak Installer in Python.
   - I highly recommend consulting a compatibility list of the tweak(s) you would like to install as I don't know what device+iOS you are running.
 
 ## Author
-Jason Duong (github.com/ben-my-to)
+Jason Duong
