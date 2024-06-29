@@ -68,7 +68,7 @@ def connect_ssh(hostname):
     return device
 
 
-def is_valid_url(repo):
+def is_valid_package(repo):
     try:
         response = requests.head(repo, allow_redirects=True, timeout=5)
         return response.status_code == 200
@@ -77,30 +77,32 @@ def is_valid_url(repo):
 
 
 def get_packages(device):
+    logger.info("Installing Packages")
     sftp = device.open_sftp()
 
     with sftp.file("/etc/apt/sources.list.d/cydia.list", "r+") as f:
         installed_packages = f.read().decode().splitlines()
 
         for repo in repos:
-            if not is_valid_url(repo):
+            if not is_valid_package(repo):
                 logger.error(f"Package '{repo}' doesn't exist or cannot be reached.")
-
-            repo_name = re.search(r"https?://([^/]+)/", repo).group(1)
-
-            if f"deb {repo} ./" not in installed_packages:
-                f.write(f"deb {repo} ./\n")
-                logger.info(f"Installing package '{repo_name}'.")
             else:
-                logger.warning(f"Package '{repo_name}' is already installed.")
+                repo_name = re.search(r"https?://([^/]+)/", repo).group(1)
+                if f"deb {repo} ./" not in installed_packages:
+                    f.write(f"deb {repo} ./\n")
+                    logger.info(f"Installing package '{repo_name}'.")
+                else:
+                    logger.warning(f"Package '{repo_name}' is already installed.")
 
     sftp.close()
 
     logger.info("Updating Packages")
-    device.exec_command("apt update 2>/dev/null")
+    device.exec_command("apt update")
 
 
 def get_tweaks(device):
+    logger.info("Installing Tweaks")
+
     for tweak in tweaks:
         _, stdout, _ = device.exec_command(f"dpkg -l | grep -qw {tweak}")
         if not stdout.channel.recv_exit_status():
