@@ -85,11 +85,6 @@ def install_tweaks(device):
                 logger.info(f"Installing tweak '{get_tweak_name(tweak)}'.")
 
 
-def respring(device):
-    logger.info("Restarting SpringBoard")
-    device.exec_command("killall SpringBoard")
-
-
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("python install.py <hostname>")

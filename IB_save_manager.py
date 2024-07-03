@@ -28,7 +28,7 @@ if len(sys.argv) != 2:
 
 def collapse_file_path(path: Path):
     root_path = path.parents[-2]
-    filename = path.name
+    filename = path.name.rstrip()
     return f"{root_path}/.../{filename}"
 
 
