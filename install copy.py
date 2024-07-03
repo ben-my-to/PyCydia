@@ -1,9 +1,34 @@
 import sys
 import re
+import getpass
+import paramiko
 import requests
-from logger import logger
-from device_manager import DeviceManager
+import logging
 
+logging.CHAR_LEVELS = {
+    "DEBUG": "*",
+    "INFO": "+",
+    "WARNING": "!",
+    "ERROR": "X",
+    "CRITICAL": "X!",
+}
+
+
+class CharFormatter(logging.Formatter):
+    def format(self, record):
+        levelname = record.levelname
+        if levelname in logging.CHAR_LEVELS:
+            record.levelname = logging.CHAR_LEVELS[levelname]
+        return super().format(record)
+
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+handler = logging.StreamHandler()
+formatter = CharFormatter("[%(levelname)s] - %(message)s")
+handler.setFormatter(formatter)
+logger.addHandler(handler)
 
 repos = [
     "https://repo.chariz.com/",
@@ -28,6 +53,20 @@ tweaks = [
     "com.spark.snowboard",
     "vim",
 ]
+
+
+def connect_ssh(hostname, username="root"):
+    device = paramiko.SSHClient()
+    device.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    device.connect(
+        hostname,
+        username=username,
+        password=getpass.getpass(
+            prompt=f"{username}@{hostname}'s password (default is 'alpine'): "
+        ),
+    )
+    logger.info(f"Connected to {username}@{hostname}")
+    return device
 
 
 def is_valid_package(repo):
@@ -95,12 +134,11 @@ if __name__ == "__main__":
         print("python install.py <hostname>")
         sys.exit(1)
 
-    dvm = DeviceManager(hostname=sys.argv[1])
-    device = dvm.get_device()
+    device = connect_ssh(hostname=sys.argv[1])
 
     install_packages(device)
     update_packages(device)
     install_tweaks(device)
+    respring(device)
 
-    dvm.respring()
-    dvm.release()
+    device.close()
