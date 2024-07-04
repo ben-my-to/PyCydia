@@ -1,5 +1,7 @@
 import paramiko
 import getpass
+import platform
+import keyring
 from logger import logger
 
 
@@ -13,15 +15,27 @@ class DeviceManager:
     def address(self):
         return f"{self.username}@{self.hostname}"
 
+    def _get_keychain_pass(self):
+        try:
+            if platform.system() != "Darwin":
+                raise Exception(f"Expected OS 'Darwin', but got '{platform.system()}'")
+            password = keyring.get_password(self.hostname, self.username)
+            if password is None:
+                raise Exception(f"Keychain password not found for {self.address}")
+        except Exception as e:
+            logger.warning(e)
+            password = getpass.getpass(
+                prompt=f"{self.address}'s password (default is 'alpine'): "
+            )
+        return password
+
     def _connect_ssh(self):
         device = paramiko.SSHClient()
         device.set_missing_host_key_policy(paramiko.AutoAddPolicy())
         device.connect(
             hostname=self.hostname,
             username=self.username,
-            password=getpass.getpass(
-                prompt=f"{self.address}'s password (default is 'alpine'): "
-            ),
+            password=self._get_keychain_pass(),
         )
         logger.info(f"Connected to {self.address}")
         return device
@@ -42,3 +56,9 @@ def collapse_path(path):
     src_path = path.parents[-2]
     dst_path = path.name.rstrip()
     return f"{src_path}/.../{dst_path}"
+
+
+if __name__ == '__main__':
+    dvm = DeviceManager(hostname='192.168.1.33')
+    device = dvm.get_device()
+    dvm.release()
