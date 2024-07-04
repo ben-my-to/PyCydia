@@ -9,6 +9,10 @@ class DeviceManager:
         self.username = username
         self._device = self._connect_ssh()
 
+    @property
+    def address(self):
+        return f"{self.username}@{self.hostname}"
+
     def _connect_ssh(self):
         device = paramiko.SSHClient()
         device.set_missing_host_key_policy(paramiko.AutoAddPolicy())
@@ -22,10 +26,6 @@ class DeviceManager:
         logger.info(f"Connected to {self.address}")
         return device
 
-    @property
-    def address(self):
-        return f"{self.username}@{self.hostname}"
-
     def get_device(self):
         return self._device
 
@@ -34,5 +34,11 @@ class DeviceManager:
         self._device.exec_command("killall SpringBoard")
 
     def release(self):
-        logger.info(f"Disconnected from {self.address}")
         self._device.close()
+        logger.info(f"Disconnected from {self.address}")
+
+
+def collapse_path(path):
+    src_path = path.parents[-2]
+    dst_path = path.name.rstrip()
+    return f"{src_path}/.../{dst_path}"

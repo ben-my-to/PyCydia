@@ -47,14 +47,14 @@ def install_packages(device):
 
         for repo in repos:
             if not is_valid_package(repo):
-                logger.error(f"Package '{repo}' doesn't exist or cannot be reached.")
+                logger.error(f"Package '{repo}' doesn't exist or cannot be reached")
             else:
                 repo_name = re.search(r"https?://([^/]+)/", repo).group(1)
                 if f"deb {repo} ./" not in installed_packages:
                     f.write(f"deb {repo} ./\n")
-                    logger.info(f"Installing package '{repo_name}'.")
+                    logger.info(f"Installing package '{repo_name}'")
                 else:
-                    logger.warning(f"Package '{repo_name}' is already installed.")
+                    logger.warning(f"Package '{repo_name}' is already installed")
     sftp.close()
 
 
@@ -73,16 +73,16 @@ def install_tweaks(device):
     for tweak in tweaks:
         _, stdout, _ = device.exec_command(f"dpkg -l | grep -qw {tweak}")
         if not stdout.channel.recv_exit_status():
-            logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed.")
+            logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed")
         else:
             _, stdout, stderr = device.exec_command(
                 f"apt install -y {tweak} --allow-unauthenticated"
             )
             stdout.channel.recv_exit_status()
             if stderr.channel.recv_exit_status():
-                logger.error(f"Unable to locate tweak: '{tweak}'.")
+                logger.error(f"Unable to locate tweak: '{tweak}'")
             else:
-                logger.info(f"Installing tweak '{get_tweak_name(tweak)}'.")
+                logger.info(f"Installing tweak '{get_tweak_name(tweak)}'")
 
 
 if __name__ == "__main__":
