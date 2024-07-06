@@ -1,4 +1,3 @@
-import sys
 import re
 import requests
 from logger import logger
@@ -58,44 +57,39 @@ def install_packages(device):
     sftp.close()
 
 
-def update_packages(device):
+def update_packages(dvm):
     logger.info("Updating Packages")
-    device.exec_command("apt update")
+    dvm.run("apt update")
 
 
-def install_tweaks(device):
+def install_tweaks(dvm):
     logger.info("Installing Tweaks")
 
     def get_tweak_name(tweak):
-        _, stdout, _ = device.exec_command(f"dpkg -s {tweak} | sed -n 's/^Name: //p'")
-        return stdout.read().decode().strip()
+        return dvm.run(f"dpkg -s {tweak} | sed -n 's/^Name: //p'")
 
     for tweak in tweaks:
-        _, stdout, _ = device.exec_command(f"dpkg -l | grep -qw {tweak}")
-        if not stdout.channel.recv_exit_status():
+        _, out_status = dvm.run(f"dpkg -l | grep -qw {tweak}", check_out=True)
+        if not out_status:
             logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed")
         else:
-            _, stdout, stderr = device.exec_command(
-                f"apt install -y {tweak} --allow-unauthenticated"
+            _, err_status = dvm.run(
+                f"apt install -y {tweak} --allow-unauthenticated",
+                check_errors=True
             )
-            stdout.channel.recv_exit_status()
-            if stderr.channel.recv_exit_status():
+            if err_status:
                 logger.error(f"Unable to locate tweak: '{tweak}'")
             else:
                 logger.info(f"Installing tweak '{get_tweak_name(tweak)}'")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 2:
-        print("python install.py <hostname>")
-        sys.exit(1)
-
-    dvm = DeviceManager(hostname=sys.argv[1])
+    dvm = DeviceManager()
     device = dvm.get_device()
 
     install_packages(device)
-    update_packages(device)
-    install_tweaks(device)
+    update_packages(dvm)
+    install_tweaks(dvm)
 
     dvm.respring()
     dvm.release()

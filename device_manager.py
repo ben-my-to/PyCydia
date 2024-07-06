@@ -5,7 +5,7 @@ from logger import logger
 
 
 class DeviceManager:
-    def __init__(self, *, hostname, username="root"):
+    def __init__(self, *, hostname="192.168.1.33", username="root"):
         self.hostname = hostname
         self.username = username
         self._device = self._connect_ssh()
@@ -40,9 +40,21 @@ class DeviceManager:
     def get_device(self):
         return self._device
 
+    def run(self, command, check_out=False, check_errors=False):
+        _, stdout, stderr = self._device.exec_command(command)
+        stdout.channel.recv_exit_status()
+        out = stdout.read().decode().rstrip()
+        if check_out:
+            out_status = stdout.channel.recv_exit_status()
+            return out, out_status
+        if check_errors:
+            err_status = stderr.channel.recv_exit_status()
+            return out, err_status
+        return out
+
     def respring(self):
         logger.info("Restarting SpringBoard")
-        self._device.exec_command("killall SpringBoard")
+        self.run("killall SpringBoard")
 
     def release(self):
         self._device.close()

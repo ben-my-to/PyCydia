@@ -24,22 +24,15 @@ IB_SAVES = (
     "SAVE/_BackupX_0-0.bin",
 )
 
-
-if len(sys.argv) != 2:
-    print("python IB_save_manager.py <hostname>")
-    sys.exit(1)
-
-dvm = DeviceManager(hostname=sys.argv[1])
+dvm = DeviceManager()
 device = dvm.get_device()
 
-_, stdout, _ = device.exec_command(f"find {REMOTE_APP_DIR} -name SwordSave.bin")
-swordsave_rel_path = stdout.read().decode()
-
+swordsave_rel_path = dvm.run(f"find {REMOTE_APP_DIR} -name SwordSave.bin")
 REMOTE_SAVE_DIR, REMOTE_SWORDSAVE_DIR, *_ = (
     REMOTE_APP_DIR / swordsave_rel_path
 ).parents
-logger.info(f"Located SwordSave Directory at {REMOTE_SWORDSAVE_DIR}")
 
+logger.info(f"Located SwordSave Directory at {REMOTE_SWORDSAVE_DIR}")
 logger.info("Restoring IB2 Save Files")
 
 REMOTE_IB2_SAVES = (
@@ -53,7 +46,7 @@ REMOTE_IB2_BACKUPS = (
 )
 
 for backup, save in zip(REMOTE_IB2_BACKUPS, REMOTE_IB2_SAVES):
-    device.exec_command(f"cp -f {backup} {save}")
+    dvm.run(f"cp -f {backup} {save}")
     logger.info(f"Copied {collapse_path(backup)} to {collapse_path(save)}")
 
 logger.info("Backing Up Save Files")

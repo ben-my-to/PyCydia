@@ -16,23 +16,17 @@ LOCAL_SAVE_DIR.mkdir(exist_ok=True)
 STRATA_PLIST = "gameclub.strata.plist"
 LOCAL_STRATA_PLIST = LOCAL_SAVE_DIR / STRATA_PLIST
 
-if len(sys.argv) != 2:
-    print("python strata_time_resetter.py <hostname>")
-    sys.exit(1)
-
-
-dvm = DeviceManager(hostname=sys.argv[1])
+dvm = DeviceManager()
 device = dvm.get_device()
 
-_, stdout, _ = device.exec_command(f"find {REMOTE_APP_DIR} -name {STRATA_PLIST}")
-plist_rel_path = stdout.read().decode()
-
+plist_rel_path = dvm.run(f"find {REMOTE_APP_DIR} -name {STRATA_PLIST}")
 REMOTE_PLIST_FILE = REMOTE_APP_DIR / plist_rel_path
+
 logger.info(f"Located Strata Directory at {REMOTE_PLIST_FILE.parents[2]}")
 
 sftp = device.open_sftp()
-
 sftp.get(REMOTE_PLIST_FILE.as_posix().rstrip(), LOCAL_STRATA_PLIST)
+
 logger.info(f"Copied {collapse_path(REMOTE_PLIST_FILE)} to {LOCAL_STRATA_PLIST}")
 
 with open(LOCAL_STRATA_PLIST, "rb") as f:
