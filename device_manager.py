@@ -1,6 +1,5 @@
 import paramiko
 import getpass
-import platform
 import keyring
 from logger import logger
 
@@ -56,7 +55,7 @@ def collapse_path(path):
     return f"{src_path}/.../{dst_path}"
 
 
-if __name__ == '__main__':
-    dvm = DeviceManager(hostname='192.168.1.33')
+if __name__ == "__main__":
+    dvm = DeviceManager(hostname="192.168.1.33")
     device = dvm.get_device()
     dvm.release()
