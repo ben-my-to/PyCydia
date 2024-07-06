@@ -17,8 +17,6 @@ class DeviceManager:
 
     def _get_keychain_pass(self):
         try:
-            if platform.system() != "Darwin":
-                raise Exception(f"Expected OS 'Darwin', but got '{platform.system()}'")
             password = keyring.get_password(self.hostname, self.username)
             if password is None:
                 raise Exception(f"Keychain password not found for {self.address}")
