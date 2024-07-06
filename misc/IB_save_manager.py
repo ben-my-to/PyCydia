@@ -1,4 +1,7 @@
 import sys
+
+sys.path.append("..")
+
 from pathlib import Path
 from logger import logger
 from device_manager import DeviceManager, collapse_path
