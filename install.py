@@ -69,13 +69,12 @@ def install_tweaks(dvm):
         return dvm.run(f"dpkg -s {tweak} | sed -n 's/^Name: //p'")
 
     for tweak in tweaks:
-        _, out_status = dvm.run(f"dpkg -l | grep -qw {tweak}", check_out=True)
+        out_status = dvm.run(f"dpkg -l | grep -qw {tweak}", check_out=True)
         if not out_status:
             logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed")
         else:
-            _, err_status = dvm.run(
-                f"apt install -y {tweak} --allow-unauthenticated",
-                check_errors=True
+            err_status = dvm.run(
+                f"apt install -y {tweak} --allow-unauthenticated", check_errors=True
             )
             if err_status:
                 logger.error(f"Unable to locate tweak: '{tweak}'")

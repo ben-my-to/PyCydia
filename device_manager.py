@@ -40,16 +40,14 @@ class DeviceManager:
     def get_device(self):
         return self._device
 
-    def run(self, command, check_out=False, check_errors=False):
+    def run(self, command, *, check_out=False, check_errors=False):
         _, stdout, stderr = self._device.exec_command(command)
         stdout.channel.recv_exit_status()
         out = stdout.read().decode().rstrip()
         if check_out:
-            out_status = stdout.channel.recv_exit_status()
-            return out, out_status
+            return stdout.channel.recv_exit_status()
         if check_errors:
-            err_status = stderr.channel.recv_exit_status()
-            return out, err_status
+            return stderr.channel.recv_exit_status()
         return out
 
     def respring(self):
