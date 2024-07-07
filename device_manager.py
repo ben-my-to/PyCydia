@@ -63,9 +63,3 @@ def collapse_path(path):
     src_path = path.parents[-2]
     dst_path = path.name.rstrip()
     return f"{src_path}/.../{dst_path}"
-
-
-if __name__ == "__main__":
-    dvm = DeviceManager(hostname="192.168.1.33")
-    device = dvm.get_device()
-    dvm.release()
