@@ -24,7 +24,7 @@ A Simple Cydia Package+Tweak Installer in Python.
   1. Open Cydia and install OpenSSH _(apt.bingner.com)_.
   2. Clone the repository: `git clone https://github.com/ben-my-to/PyCydia.git && cd PyCydia/`.
   3. Install the requirements in your virtual environment: `pip install -r requirements.txt`.
-  4. Run the python script: `python install.py <hostname>`.
+  4. Run the python script: `python install.py`.
      - Your device IP address can be found in: Settings -> Wi-Fi -> (i) -> IP Address.
      - The default password is `alpine`.
      - _(Optional)_ You should change the default password using the command `passwd`.

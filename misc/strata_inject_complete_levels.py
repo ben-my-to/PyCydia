@@ -41,18 +41,17 @@ def level_generator(game):
         for levels in waves:
             wave_num = levels["Wave"]
             for lattice_num in range(levels["Lattices"]):
-                yield set_num, wave_num, lattice_num
+                yield f"{set_num}_Wave{wave_num}_Lattice{lattice_num}"
 
 for level in level_generator(game):
-    p = "{0}_Wave{1}_Lattice{2}".format(*level)
-    if p not in data or data[p] != 3:
-        if p not in data:
-            logger.info(f"Injecting completed level '{p}'")
+    if level not in data or data[level] != 3:
+        if level not in data:
+            logger.info(f"Injecting completed level '{level}'")
         else:
-            logger.info(f"Completing level '{p}'")
+            logger.info(f"Completing level '{level}'")
         data[p] = 3
     else:
-        logger.warning(f"'{p}' is already completed")
+        logger.warning(f"'{level}' is already completed")
 
 with open(LOCAL_STRATA_PLIST, "wb") as f:
     plistlib.dump(data, f)
