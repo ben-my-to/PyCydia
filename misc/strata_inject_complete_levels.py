@@ -38,10 +38,9 @@ with open("levels.json", "r") as f:
 
 
 def level_generator(game):
-    for set_num, waves in game.items():
-        for levels in waves:
-            wave_num = levels["Wave"]
-            for lattice_num in range(levels["Lattices"]):
+    for set_num, s in game.items():
+        for wave_num, n_lattices in zip(s["Waves"], s["Lattices"]):
+            for lattice_num in range(n_lattices):
                 yield f"{set_num}_Wave{wave_num}_Lattice{lattice_num}"
 
 
