@@ -36,6 +36,7 @@ with open(LOCAL_STRATA_PLIST, "rb") as f:
 with open("levels.json", "r") as f:
     game = json.load(f)
 
+
 def level_generator(game):
     for set_num, waves in game.items():
         for levels in waves:
@@ -43,13 +44,14 @@ def level_generator(game):
             for lattice_num in range(levels["Lattices"]):
                 yield f"{set_num}_Wave{wave_num}_Lattice{lattice_num}"
 
+
 for level in level_generator(game):
     if level not in data or data[level] != 3:
         if level not in data:
             logger.info(f"Injecting completed level '{level}'")
         else:
             logger.info(f"Completing level '{level}'")
-        data[p] = 3
+        data[level] = 3
     else:
         logger.warning(f"'{level}' is already completed")
 
