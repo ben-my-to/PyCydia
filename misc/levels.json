@@ -1,128 +1,30 @@
 {
-    "Sundry": [
-        {
-            "Wave": 0,
-            "Lattices": 9
-        },
-        {
-            "Wave": 1,
-            "Lattices": 9
-        },
-        {
-            "Wave": 2,
-            "Lattices": 16
-        },
-        {
-            "Wave": 3,
-            "Lattices": 16
-        }
-    ],
-    "Harvest": [
-        {
-            "Wave": 0,
-            "Lattices": 9
-        },
-        {
-            "Wave": 1,
-            "Lattices": 16
-        },
-        {
-            "Wave": 2,
-            "Lattices": 25
-        },
-        {
-            "Wave": 3,
-            "Lattices": 36
-        }
-    ],
-    "Persist": [
-        {
-            "Wave": 0,
-            "Lattices": 16
-        },
-        {
-            "Wave": 1,
-            "Lattices": 16
-        },
-        {
-            "Wave": 2,
-            "Lattices": 25
-        },
-        {
-            "Wave": 3,
-            "Lattices": 25
-        }
-    ],
-    "Flourish": [
-        {
-            "Wave": 0,
-            "Lattices": 9
-        },
-        {
-            "Wave": 1,
-            "Lattices": 9
-        },
-        {
-            "Wave": 2,
-            "Lattices": 16
-        },
-        {
-            "Wave": 3,
-            "Lattices": 16
-        }
-    ],
-    "Entwine": [
-        {
-            "Wave": 0,
-            "Lattices": 4
-        },
-        {
-            "Wave": 1,
-            "Lattices": 4
-        },
-        {
-            "Wave": 2,
-            "Lattices": 9
-        },
-        {
-            "Wave": 3,
-            "Lattices": 9
-        }
-    ],
-    "Prodigy": [
-        {
-            "Wave": 0,
-            "Lattices": 16
-        },
-        {
-            "Wave": 1,
-            "Lattices": 25
-        },
-        {
-            "Wave": 2,
-            "Lattices": 25
-        },
-        {
-            "Wave": 3,
-            "Lattices": 36
-        }
-    ],
-    "Wintertide": [
-        {
-            "Wave": 0,
-            "Lattices": 16
-        },
-        {
-            "Wave": 1,
-            "Lattices": 16
-        },
-        {
-            "Wave": 2,
-            "Lattices": 25
-        },
-        {
-            "Wave": 3,
-            "Lattices": 36
-        }
-    ]
+    "Sundry": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [9, 9, 16, 16]
+    },
+    "Harvest": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [9, 16, 25, 36]
+    },
+    "Persist": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [16, 16, 25, 25]
+    },
+    "Flourish": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [9, 9, 16, 16]
+    },
+    "Entwine": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [4, 4, 9, 9]
+    },
+    "Prodigy": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [16, 25, 25, 36]
+    },
+    "Wintertide": {
+        "Waves": [0, 1, 2, 3],
+        "Lattices": [16, 16, 25, 36]
+    }
 }
