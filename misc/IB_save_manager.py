@@ -7,7 +7,8 @@ from logger import logger
 from device_manager import DeviceManager, collapse_path
 
 
-REMOTE_APP_DIR = Path("/private/var/mobile/Containers/Data/Application")
+dvm = DeviceManager()
+device = dvm.get_device()
 
 LOCAL_SAVE_DIR = Path("STORE/")
 LOCAL_SAVE_DIR.mkdir(exist_ok=True)
@@ -24,15 +25,10 @@ IB_SAVES = (
     "SAVE/_BackupX_0-0.bin",
 )
 
-dvm = DeviceManager()
-device = dvm.get_device()
+REMOTE_FILE_PATH = dvm.get_save_path("SwordSave.bin")
+REMOTE_SAVE_DIR, REMOTE_APP_DIR, *_ = REMOTE_FILE_PATH.parents
 
-swordsave_rel_path = dvm.run(f"find {REMOTE_APP_DIR} -name SwordSave.bin")
-REMOTE_SAVE_DIR, REMOTE_SWORDSAVE_DIR, *_ = (
-    REMOTE_APP_DIR / swordsave_rel_path
-).parents
-
-logger.info(f"Located SwordSave Directory at {REMOTE_SWORDSAVE_DIR}")
+logger.info(f"Located SwordSave Directory at {REMOTE_APP_DIR}")
 logger.info("Restoring IB2 Save Files")
 
 REMOTE_IB2_SAVES = (
@@ -46,7 +42,7 @@ REMOTE_IB2_BACKUPS = (
 )
 
 for backup, save in zip(REMOTE_IB2_BACKUPS, REMOTE_IB2_SAVES):
-    dvm.run(f"cp -f {backup} {save}")
+    dvm.run(["cp", "-f", backup, save])
     logger.info(f"Copied {collapse_path(backup)} to {collapse_path(save)}")
 
 logger.info("Backing Up Save Files")

@@ -59,22 +59,27 @@ def install_packages(device):
 
 def update_packages(dvm):
     logger.info("Updating Packages")
-    dvm.run("apt update")
+    dvm.run(["apt", "update"])
 
 
 def install_tweaks(dvm):
     logger.info("Installing Tweaks")
 
     def get_tweak_name(tweak):
-        return dvm.run(f"dpkg -s {tweak} | sed -n 's/^Name: //p'")
+        return dvm.run(
+            ["dpkg", "-s", tweak, DeviceManager.PIPE, "sed", "-n", "'s/^Name: //p'"]
+        )
 
     for tweak in tweaks:
-        out_status = dvm.run(f"dpkg -l | grep -qw {tweak}", check_out=True)
+        out_status = dvm.run(
+            ["dpkg", "-l", DeviceManager.PIPE, "grep", "-qw", tweak], check_out=True
+        )
         if not out_status:
             logger.warning(f"Tweak '{get_tweak_name(tweak)}' is already installed")
         else:
             err_status = dvm.run(
-                f"apt install -y {tweak} --allow-unauthenticated", check_errors=True
+                ["apt", "install", "-y", tweak, "--allow-unauthenticated"],
+                check_errors=True,
             )
             if err_status:
                 logger.error(f"Unable to locate tweak: '{tweak}'")

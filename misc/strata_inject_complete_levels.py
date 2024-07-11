@@ -8,8 +8,8 @@ import plistlib
 from logger import logger
 from device_manager import DeviceManager, collapse_path
 
-
-REMOTE_APP_DIR = Path("/private/var/mobile/Containers/Data/Application")
+dvm = DeviceManager()
+device = dvm.get_device()
 
 LOCAL_SAVE_DIR = Path("STORE/")
 LOCAL_SAVE_DIR.mkdir(exist_ok=True)
@@ -17,18 +17,13 @@ LOCAL_SAVE_DIR.mkdir(exist_ok=True)
 STRATA_PLIST = "gameclub.strata.plist"
 LOCAL_STRATA_PLIST = LOCAL_SAVE_DIR / STRATA_PLIST
 
-dvm = DeviceManager()
-device = dvm.get_device()
-
-plist_rel_path = dvm.run(f"find {REMOTE_APP_DIR} -name {STRATA_PLIST}")
-REMOTE_PLIST_FILE = REMOTE_APP_DIR / plist_rel_path
-
-logger.info(f"Located Strata Directory at {REMOTE_PLIST_FILE.parents[2]}")
+REMOTE_FILE_PATH = dvm.get_save_path(STRATA_PLIST)
+logger.info(f"Located Strata Directory at {REMOTE_FILE_PATH.parents[2]}")
 
 sftp = device.open_sftp()
-sftp.get(REMOTE_PLIST_FILE.as_posix().rstrip(), LOCAL_STRATA_PLIST)
+sftp.get(REMOTE_FILE_PATH.as_posix().rstrip(), LOCAL_STRATA_PLIST)
 
-logger.info(f"Copied {collapse_path(REMOTE_PLIST_FILE)} to {LOCAL_STRATA_PLIST}")
+logger.info(f"Copied {collapse_path(REMOTE_FILE_PATH)} to {LOCAL_STRATA_PLIST}")
 
 with open(LOCAL_STRATA_PLIST, "rb") as f:
     data = plistlib.load(f)
@@ -38,8 +33,8 @@ with open("levels.json", "r") as f:
 
 
 def level_generator(game):
-    for set_num, s in game.items():
-        for wave_num, n_lattices in zip(s["Waves"], s["Lattices"]):
+    for set_num, wave in game.items():
+        for wave_num, n_lattices in zip(wave["Waves"], wave["Lattices"]):
             for lattice_num in range(n_lattices):
                 yield f"{set_num}_Wave{wave_num}_Lattice{lattice_num}"
 
@@ -57,8 +52,8 @@ for level in level_generator(game):
 with open(LOCAL_STRATA_PLIST, "wb") as f:
     plistlib.dump(data, f)
 
-sftp.put(LOCAL_STRATA_PLIST, REMOTE_PLIST_FILE.as_posix().rstrip())
-logger.info(f"Copied {LOCAL_STRATA_PLIST} to {collapse_path(REMOTE_PLIST_FILE)}")
+sftp.put(LOCAL_STRATA_PLIST, REMOTE_FILE_PATH.as_posix().rstrip())
+logger.info(f"Copied {LOCAL_STRATA_PLIST} to {collapse_path(REMOTE_FILE_PATH)}")
 
 sftp.close()
 dvm.release()

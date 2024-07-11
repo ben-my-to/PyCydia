@@ -1,10 +1,13 @@
 import paramiko
 import getpass
 import keyring
+from pathlib import Path
 from logger import logger
 
 
 class DeviceManager:
+    PIPE = "|"
+
     def __init__(self, *, hostname="192.168.1.33", username="root"):
         self.hostname = hostname
         self.username = username
@@ -40,8 +43,10 @@ class DeviceManager:
     def get_device(self):
         return self._device
 
-    def run(self, command, *, check_out=False, check_errors=False):
-        _, stdout, stderr = self._device.exec_command(command)
+    def run(self, commands, check_out=False, check_errors=False):
+        _, stdout, stderr = self._device.exec_command(
+            " ".join(map(str, commands))
+        )  # NOTE: casting Path to str object
         stdout.channel.recv_exit_status()
         out = stdout.read().decode().rstrip()
         if check_out:
@@ -50,9 +55,14 @@ class DeviceManager:
             return stderr.channel.recv_exit_status()
         return out
 
+    def get_save_path(self, filename):
+        REMOTE_APP_DIR = Path("/private/var/mobile/Containers/Data/Application")
+        rel_path = self.run(["find", REMOTE_APP_DIR, "-name", filename])
+        return REMOTE_APP_DIR / rel_path
+
     def respring(self):
         logger.info("Restarting SpringBoard")
-        self.run("killall SpringBoard")
+        self.run(["killall", "SpringBoard"])
 
     def release(self):
         self._device.close()
